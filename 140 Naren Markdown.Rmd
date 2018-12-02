@@ -1,0 +1,73 @@
+---
+title: "140 Naren Markdown"
+author: "Naren Akurati"
+date: "11/29/2018"
+output: html_document
+---
+
+```{r, echo = FALSE}
+library(testthat)
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(gridExtra))
+library(class)
+library(ISLR)
+suppressPackageStartupMessages(library(caret))
+library(e1071)
+suppressPackageStartupMessages(library(MASS))
+library(reshape2)
+library(ggcorrplot)
+suppressPackageStartupMessages(library(boot))
+suppressPackageStartupMessages(library(resample))
+library(rpart)
+library(tree)
+suppressPackageStartupMessages(library(randomForest))
+```
+
+```{r}
+data <- read.csv("listings.csv")
+summary(data)
+
+#measuring demand for an airbnb
+data %>% colnames()
+levels(data$neighbourhood)
+
+#validating reviews per month
+first_review <- as.Date(data$first_review)
+last_review <- as.Date(data$last_review)
+min(first_review, na.rm=TRUE) #2009-05-26
+max(last_review, na.rm=TRUE) #2018-11-04
+as.Date("2009-05-26") - as.Date("2018-11-04") #3449
+3449/30.41667
+avg_number_reviews_per_month <- data$number_of_reviews/113.3918
+hist(avg_number_reviews_per_month)
+
+hist(data$reviews_per_month)
+
+length(levels(data$neighbourhood))
+```
+
+```{r}
+#santa_monica
+santa_monica <- data[which(data$neighbourhood == "Santa Monica"),]
+santa_monica$price = as.numeric(gsub("\\$", "", santa_monica$price))
+
+santa_monica <- santa_monica[!is.na(santa_monica$reviews_per_month),]
+santa_monica <- santa_monica[!is.na(santa_monica$price),]
+
+smrp <- data.frame("price" = santa_monica$price, "avg_reviews" = santa_monica$reviews_per_month)
+
+ggplot(smrp, aes(x = price, y = avg_reviews)) + geom_point()
+```
+
+```{r}
+hollywood <- data[which(data$neighbourhood == "Hollywood"),]
+hollywood$price = as.numeric(gsub("\\$", "", hollywood$price))
+
+hollywood <- hollywood[!is.na(hollywood$reviews_per_month),]
+hollywood <- hollywood[!is.na(hollywood$price),]
+
+smrp <- data.frame("price" = hollywood$price, "avg_reviews" = hollywood$reviews_per_month)
+
+ggplot(smrp, aes(x = price, y = avg_reviews)) + geom_point()
+```
